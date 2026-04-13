@@ -13,8 +13,15 @@ def send_request(req, data, comando_original):
     with socket.socket() as s:
         s.connect(("localhost", 5000))
         msg = f"{req},{json.dumps(data)}"
-        s.send(msg.encode())
-        receive = s.recv(65536)
+        s.sendall(msg.encode())
+        s.shutdown(socket.SHUT_WR)
+        chunks = []
+        while True:
+            chunk = s.recv(4096)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        receive = b"".join(chunks)
 
     user_msg, log_msg = np.load(io.BytesIO(receive), allow_pickle=True)
     print(user_msg)

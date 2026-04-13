@@ -14,6 +14,16 @@ TABLES_DIR = BASE_DIR / "Tables"
 task_queue = queue.Queue()
 
 
+def recv_request(conn):
+    chunks = []
+    while True:
+        data = conn.recv(4096)
+        if not data:
+            break
+        chunks.append(data)
+    return b"".join(chunks).decode()
+
+
 def worker():
     while True:
         method, payload, conn = task_queue.get() # Pegando a função + parâmetro
@@ -69,7 +79,7 @@ def socket_server():
 
     while True:
         conn, addr = s.accept()
-        data = conn.recv(1024).decode()
+        data = recv_request(conn)
 
         try:
             if "," in data:
@@ -87,12 +97,7 @@ def socket_server():
 if __name__ == '__main__':
     initialize_db_folder()
 
-    threads = []
     for _ in range(4):
-        (threading.Thread(target=worker, daemon=True)).start()
+        threading.Thread(target=worker, daemon=True).start()
 
     socket_server()
-
-    # opcional: esperar (vai travar porque é loop infinito)
-    for t in threads:
-        t.join()
