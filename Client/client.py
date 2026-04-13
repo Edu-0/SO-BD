@@ -16,8 +16,8 @@ def send_request(req, data, comando_original):
         s.sendall(msg.encode())
         s.shutdown(socket.SHUT_WR)
         chunks = []
-        while True:
-            chunk = s.recv(4096)
+        while True: # Recebendo a resposta do servidor em partes
+            chunk = s.recv(4096) # O cliente lê a resposta em blocos de 4KB
             if not chunk:
                 break
             chunks.append(chunk)

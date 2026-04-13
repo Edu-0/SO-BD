@@ -17,7 +17,7 @@ task_queue = queue.Queue()
 def recv_request(conn):
     chunks = []
     while True:
-        data = conn.recv(4096)
+        data = conn.recv(4096) # O servidor lê a requisição em blocos de 4KB
         if not data:
             break
         chunks.append(data)
