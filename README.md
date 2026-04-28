@@ -49,6 +49,21 @@ python Client/client.py
 
 3. Digite comandos SQL no cliente.
 
+## Teste de concorrência
+
+Para executar uma carga intensa com múltiplas threads, backup automático da tabela e geração de relatório, rode:
+
+```bash
+python stress_concurrency_test.py
+```
+
+Ou para um relatório com diferentes números de threads de Client:
+```bash
+python stress_concurrency_test.py --matrix 1 2 4 8 --workload-cycles 16
+```
+
+O script gera o relatório em `relatorio_teste_concorrencia.md` e adiciona um resumo da execução em `log.txt`. Também restaura `Tables/test.csv` ao estado original ao final do teste.
+
 ## Exemplos de uso
 
 ```sql
