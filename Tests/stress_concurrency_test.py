@@ -283,7 +283,7 @@ def write_matrix_report(matrix_rows, baseline_duration, total_requests):
     lines.append("- Speedup acima de 1x indica ganho em relação à execução com 1 thread no mesmo volume total de trabalho.")
     lines.append("- Req/s ajuda a ver se o sistema está realmente processando mais requisições por segundo.")
     lines.append("- Eficiência é o speedup dividido pelo número de threads e mostra o quanto cada thread contribui.")
-    lines.append("- No seu caso, o gargalo principal também inclui o `time.sleep(1)` do servidor e o lock por operação no CSV.")
+    lines.append("- O gargalo principal inclui o lock por operação no CSV.")
 
     REPORT_MATRIX_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
