@@ -16,4 +16,4 @@
 - Speedup acima de 1x indica ganho em relação à execução com 1 thread no mesmo volume total de trabalho.
 - Req/s ajuda a ver se o sistema está realmente processando mais requisições por segundo.
 - Eficiência é o speedup dividido pelo número de threads e mostra o quanto cada thread contribui.
-- No seu caso, o gargalo principal também inclui o `time.sleep(1)` do servidor e o lock por operação no CSV.
+- O gargalo principal inclui o lock por operação no CSV.
