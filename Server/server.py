@@ -81,7 +81,9 @@ def socket_server():
         data = recv_request(conn)
 
         try:
-            if "," in data:
+            if not data.strip():
+                conn.close() # Ignora conexões vazias
+            elif "," in data:
                 method, json_payload = data.split(",", 1)
                 payload = json.loads(json_payload.strip())
                 task_queue.put((method.strip(), payload, conn))
