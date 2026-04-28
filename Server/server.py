@@ -60,7 +60,6 @@ def worker():
             print(f"Erro ao enviar resposta: {e}")
         finally:
             conn.close()
-            time.sleep(1)  # Simula processamento
             task_queue.task_done() # Avisa que o processo finalizou
 
 

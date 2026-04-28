@@ -3,12 +3,32 @@ from pathlib import Path
 import operator
 import threading
 
-# Se nenhuma thread estiver utilizando a func, o lock é adquirido e a thread entra na seção
-# Após isso, o lock passa a estar ocupado
-# Fica bloqueado automaticamente até ser liberado
-# Se outra thread tentar entrar enquanto o lock estiver bloqueado, ele n é aceito
-# Uma das threads esperando será aceita após a thread anterior finalizar para que entre e se repita o processo de bloqueio
-lock = threading.Lock() # O lock funciona automaticamente e n preciso verificar nada manualmente
+class ReadWriteLock:
+    def __init__(self):
+        self.read_lock = threading.Lock()
+        self.write_lock = threading.Lock()
+        self.readers = 0
+
+    def acquire_read(self):
+        with self.read_lock:
+            self.readers += 1
+            if self.readers == 1:
+                self.write_lock.acquire()
+
+    def release_read(self):
+        with self.read_lock:
+            self.readers -= 1
+            if self.readers == 0:
+                self.write_lock.release()
+
+    def acquire_write(self):
+        self.write_lock.acquire()
+
+    def release_write(self):
+        self.write_lock.release()
+
+
+lock = ReadWriteLock()
 
 ops = {
     "==": operator.eq,
@@ -47,7 +67,8 @@ def aplicar_filtro(df, where):
 
 def get(table, value):
     # SELECT cols[...] FROM table WHERE where[...]
-    with lock:
+    lock.acquire_read()
+    try:
         file_path = TABLES_DIR / table
         df = pd.read_csv(file_path, skipinitialspace=True)
         mask = aplicar_filtro(df, value["where"])
@@ -63,11 +84,14 @@ def get(table, value):
         log_msg = f"[GET] tabela={table} | \n{user_msg}"
 
         return user_msg, log_msg # Retornando o GET para o usuário
+    finally:
+        lock.release_read()
 
 
 def post(table, value):
     # INSERT INTO table(cols[...]) VALUES values([...])
-    with lock:
+    lock.acquire_write()
+    try:
         file_path = TABLES_DIR / table
         df = pd.read_csv(file_path)
 
@@ -92,11 +116,14 @@ def post(table, value):
         log_msg = f"[POST] tabela={table} | inseridas={n} | cols={','.join(value['cols'])}"
 
         return user_msg, log_msg
+    finally:
+        lock.release_write()
 
 
 def put(table, value):
     # UPDATE table SET values[...] WHERE where[...]
-    with lock:
+    lock.acquire_write()
+    try:
         file_path = TABLES_DIR / table
         df = pd.read_csv(file_path)
 
@@ -116,11 +143,14 @@ def put(table, value):
 
         df.to_csv(file_path, index=False)
         return user_msg, log_msg
+    finally:
+        lock.release_write()
 
 
 def delete(table, value):
     # DELETE FROM table WHERE where[...]
-    with lock:
+    lock.acquire_write()
+    try:
         file_path = TABLES_DIR / table
         df = pd.read_csv(file_path)
 
@@ -137,3 +167,5 @@ def delete(table, value):
         log_msg = f"[DELETE] tabela={table} | removidas={n} | where={where}"
 
         return user_msg, log_msg
+    finally:
+        lock.release_write()
