@@ -13,16 +13,16 @@ class ReadWriteLock:
         with self.read_lock:
             self.readers += 1
             if self.readers == 1:
-                self.write_lock.acquire()
+                self.write_lock.acquire() # Se for o primeiro leitor, trava o write_lock
 
     def release_read(self):
         with self.read_lock:
             self.readers -= 1
             if self.readers == 0:
-                self.write_lock.release()
+                self.write_lock.release() # Se for o último leitor, libera o write_lock
 
     def acquire_write(self):
-        self.write_lock.acquire()
+        self.write_lock.acquire() # Tenta pegar write_lock
 
     def release_write(self):
         self.write_lock.release()
