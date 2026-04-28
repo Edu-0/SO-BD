@@ -88,7 +88,7 @@ Projeto desenvolvido em dupla.
 ## Créditos
 
 - Eduardo José de Souza: desenvolvimento da parte de programação do cliente, servidor e banco
-- Lucas Lopes Baroni: desenvolvimento do `sql.py` e da documentação escrita
+- Lucas Lopes Baroni: desenvolvimento do `sql.py` e relatório do trabalho
 
 ## Referências
 
